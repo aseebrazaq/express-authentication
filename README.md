@@ -1,2 +1,2 @@
 # express-authentication
-# v5
+# v6
