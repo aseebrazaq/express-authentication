@@ -1,11 +1,18 @@
 const express = require('express')
 const app = express()
 
+const { sequelize, testConnection } = require('./utils/connect')
+
 app.set('view engine', 'ejs')
 // required for forms
 app.use(express.urlencoded({extended: true}))
 // for JSON request
 app.use(express.json())
+
+testConnection()
+sequelize.sync().then(()=>{
+    console.log('db is ready')
+})
 
 // STATIC example (/test/tt.html) navigate all pages in directory
 // app.use(express.static("public"))

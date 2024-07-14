@@ -3,6 +3,8 @@ const router =  express.Router()
 
 router.use(logger)
 
+const { User } = require('../utils/connect')
+
 router.get('/', (req, res) => {
     // reading specific param ?name=...
     console.log(req.query.name);
@@ -28,6 +30,19 @@ router.post('/', (req, res) => {
     }
     console.log( req.body.firstName )
     res.send('create user, Hello')
+})
+
+router.post('/validate', async (req, res) => {
+    try {
+        const newUser = await User.create(req.body)
+        res.send('user is added')
+        console.log(newUser.toJSON()); // This is good!
+        //console.log(JSON.stringify(newUser, null, 4)); // This is also good!
+    } catch (error) {
+        console.error('Unable to CREATE USER:', error);
+    }
+    
+    // res.send('testing connection on validate')
 })
 
 // order important reads top to bottom
