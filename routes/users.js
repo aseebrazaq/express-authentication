@@ -4,6 +4,7 @@ const router =  express.Router()
 router.use(logger)
 
 const { User } = require('../utils/connect')
+const { hashPassword } = require('../utils/encryption')
 
 router.get('/', (req, res) => {
     // reading specific param ?name=...
@@ -33,8 +34,14 @@ router.post('/', (req, res) => {
 })
 
 router.post('/validate', async (req, res) => {
+    const { firstName, lastName, email, username, password } = req.body;
+    const hashed = await hashPassword(password)
+    const payload = {
+        ...req.body,
+        password: hashed
+    }
     try {
-        const newUser = await User.create(req.body)
+        const newUser = await User.create(payload)
         res.send('user is added')
         console.log(newUser.toJSON()); // This is good!
         //console.log(JSON.stringify(newUser, null, 4)); // This is also good!

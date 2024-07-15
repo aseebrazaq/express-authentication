@@ -26,19 +26,23 @@ User.init(
       },
       firstName: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       lastName: {
         type: DataTypes.STRING,
         // allowNull defaults to true
       },
-      username: {
+      email: {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       password: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       }
   },
   {

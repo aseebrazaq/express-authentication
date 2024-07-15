@@ -10,7 +10,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 
 testConnection()
-sequelize.sync().then(()=>{
+sequelize.sync({force: true}).then(()=>{
     console.log('db is ready')
 })
 
