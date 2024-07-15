@@ -4,7 +4,7 @@ const router =  express.Router()
 router.use(logger)
 
 const { User } = require('../models/user')
-const { hashPassword } = require('../utils/encryption')
+const { hashPassword, comparePassword } = require('../utils/encryption')
 
 router.get('/', (req, res) => {
     // reading specific param ?name=...
@@ -15,7 +15,40 @@ router.get('/', (req, res) => {
 // keep static route at top
 router.get('/new', (req, res) => {
     // res.send('user new form')
-    res.render('users/new', {firstName: 'placeholder'})
+    res.render('users/new', {
+        data: { 
+            firstName: 'placeholder' 
+        }
+    })
+})
+
+router.get('/login', (req, res) => {
+    res.render('users/login')
+})
+
+router.get('/index', (req, res) => {
+    res.render('users/dashboard')
+})
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const dbUser = await User.findAll({
+        where: {
+          email: email
+        },
+      });
+
+      const { password: dbPassword } = dbUser[0]?.dataValues;
+      const match = await comparePassword(password, dbPassword);
+      console.log('match', match);
+
+      if (match) {
+            //TODO :: session storage
+        res.redirect('/users/index')
+        return
+      }
+
+    res.send('handle login')
 })
 
 // cannot access the body, need to use middleware express.urlencoded
@@ -33,7 +66,7 @@ router.post('/', (req, res) => {
     res.send('create user, Hello')
 })
 
-router.post('/validate', async (req, res) => {
+router.post('/new', async (req, res) => {
     const { firstName, lastName, email, username, password } = req.body;
     const hashed = await hashPassword(password)
     const payload = {
@@ -42,11 +75,16 @@ router.post('/validate', async (req, res) => {
     }
     try {
         const newUser = await User.create(payload)
-        res.send('user is added')
         console.log(newUser.toJSON()); // This is good!
+        res.status(201).render('users/login', { message: 'User created successfully, Please log in.' });
         //console.log(JSON.stringify(newUser, null, 4)); // This is also good!
+        // res.send('user is added')
     } catch (error) {
         console.error('Unable to CREATE USER:', error);
+        res.status(500).render('users/new', { 
+            message: 'Failed to create user, Try again.',
+            data: payload
+        });
     }
     
     // res.send('testing connection on validate')

@@ -9,23 +9,11 @@
   </head>
   <body>
 	<!-- <script src="index.js"></script> -->
-   REGISTER
+   LOGIN
    <h1><%= locals.message %></h1>
-   <form action="/users/new" method="POST">
-        <label>First name
-            <input type="text" name="firstName" value="<%= locals.data?.firstName %>" />
-        </label>
-        <br/>
-        <label>Last name
-            <input type="text" name="lastName" value="<%= locals.data?.lastName %>" />
-        </label>
-        <br/>
-        <label>Username
-          <input type="text" name="username" value="<%= locals.data?.username %>" />
-        </label>
-        <br/>
+   <form action="/users/login" method="POST">
         <label>Email
-          <input type="text" name="email" value="<%= locals.data?.email %>" required />
+          <input type="text" name="email" value="<%= locals.email %>" required/>
         </label>
         <br/>
         <label>Password
