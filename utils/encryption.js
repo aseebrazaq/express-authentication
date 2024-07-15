@@ -2,8 +2,7 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 
 const hashPassword = async (userInputPassword) => {
-    const hashed = await bcrypt.hash(userInputPassword, saltRounds);
-    return hashed;
+    return await bcrypt.hash(userInputPassword, saltRounds);
 }
 
 const comparePassword = (userInputPassword, dbHashedPassword) => {

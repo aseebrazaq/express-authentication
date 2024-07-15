@@ -3,7 +3,7 @@ const router =  express.Router()
 
 router.use(logger)
 
-const { User } = require('../utils/connect')
+const { User } = require('../models/user')
 const { hashPassword } = require('../utils/encryption')
 
 router.get('/', (req, res) => {

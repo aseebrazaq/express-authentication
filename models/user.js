@@ -1,18 +1,5 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
-
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './database.sqlite'
-});
-
-const testConnection = async function() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-      } catch (error) {
-        console.error('Unable to connect to the database:', error);
-      }
-}
+const { DataTypes, Model } = require('sequelize')
+const { sequelize } = require('../lib/db')
 
 class User extends Model {}
 
@@ -53,8 +40,5 @@ User.init(
 );
 
 module.exports = {
-    Sequelize,
-    sequelize,
-    testConnection,
     User
 }

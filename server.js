@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
 
-const { sequelize, testConnection } = require('./utils/connect')
+const { sequelize, testConnection } = require('./lib/db')
+const userRouter = require('./routes/users')
 
 app.set('view engine', 'ejs')
 // required for forms
@@ -9,9 +10,10 @@ app.use(express.urlencoded({extended: true}))
 // for JSON request
 app.use(express.json())
 
-testConnection()
 sequelize.sync({force: true}).then(()=>{
+    testConnection()
     console.log('db is ready')
+    app.listen(3000)
 })
 
 // STATIC example (/test/tt.html) navigate all pages in directory
@@ -32,8 +34,6 @@ app.get('/', logger, (req, res) => {
     res.render('index', { text: 'world'})
 })
 
-const userRouter = require('./routes/users')
-
 // link route to path
 app.use('/users', userRouter)
 
@@ -42,5 +42,3 @@ function logger(req, res, next) {
     console.log(req.originalUrl)
     next()
 }
-
-app.listen(3000)
