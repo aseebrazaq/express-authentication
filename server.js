@@ -1,9 +1,12 @@
 const express = require('express')
 const session = require('express-session')
-const app = express()
+const ejs = require('ejs')
+const userRouter = require('./routes/users')
+const accountRouter = require('./routes/account')
 
 const { sequelize, testConnection } = require('./lib/db')
-const userRouter = require('./routes/users')
+
+const app = express()
 
 app.set('view engine', 'ejs')
 // required for forms
@@ -20,12 +23,7 @@ app.use(session({
     },
     saveUninitialized: false
 }))
-
-sequelize.sync().then(()=>{
-    testConnection()
-    console.log('db is ready')
-    app.listen(3000)
-})
+app.use(express.static(__dirname + '/public'));
 
 // STATIC example (/test/tt.html) navigate all pages in directory
 // app.use(express.static("public"))
@@ -47,3 +45,10 @@ app.get('/', (req, res) => {
 
 // link route to path
 app.use('/users', userRouter)
+app.use('/account', accountRouter)
+
+sequelize.sync().then(()=>{
+    testConnection()
+    console.log('db is ready')
+    app.listen(3000)
+})
