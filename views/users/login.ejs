@@ -13,7 +13,7 @@
    <h1><%= locals.message %></h1>
    <form action="/users/login" method="POST">
         <label>Email
-          <input type="text" name="email" value="<%= locals.email %>" required/>
+          <input type="text" name="email" value="<%= locals?.data?.email %>" required/>
         </label>
         <br/>
         <label>Password

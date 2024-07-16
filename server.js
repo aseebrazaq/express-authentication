@@ -1,4 +1,5 @@
 const express = require('express')
+const session = require('express-session')
 const app = express()
 
 const { sequelize, testConnection } = require('./lib/db')
@@ -9,6 +10,16 @@ app.set('view engine', 'ejs')
 app.use(express.urlencoded({extended: true}))
 // for JSON request
 app.use(express.json())
+// middleware for sessions
+//sid.signature
+app.use(session({
+    secret: 'anytexthere',
+    cookie: {
+        sameSite: 'strict',
+        maxAge: 30000
+    },
+    saveUninitialized: false
+}))
 
 sequelize.sync().then(()=>{
     testConnection()
@@ -24,7 +35,7 @@ sequelize.sync().then(()=>{
 
 // get/post/put/delete/patch, tend not to use next param on get post, can have as many middlewares as needed
 // app.get("/", logger, logger, (req, res))...
-app.get('/', logger, (req, res) => {
+app.get('/', (req, res) => {
     // console.log('here')
     // res.sendStatus(500)
     // res.status(200).send('HI')
@@ -36,9 +47,3 @@ app.get('/', logger, (req, res) => {
 
 // link route to path
 app.use('/users', userRouter)
-
-// all middleware takes req res next
-function logger(req, res, next) {
-    console.log(req.originalUrl)
-    next()
-}

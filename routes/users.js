@@ -1,10 +1,12 @@
 const express = require('express')
 const router =  express.Router()
 
-router.use(logger)
-
 const { User } = require('../models/user')
 const { hashPassword, comparePassword } = require('../utils/encryption')
+const { isAuthorised } = require('../middleware/auth')
+const { locals } = require('../utils/format')
+
+router.use(isAuthorised)
 
 router.get('/', (req, res) => {
     // reading specific param ?name=...
@@ -14,12 +16,7 @@ router.get('/', (req, res) => {
 
 // keep static route at top
 router.get('/new', (req, res) => {
-    // res.send('user new form')
-    res.render('users/new', {
-        data: { 
-            firstName: 'placeholder' 
-        }
-    })
+    res.render('users/new', locals({firstName: 'placeholder'}))
 })
 
 router.get('/login', (req, res) => {
@@ -32,23 +29,36 @@ router.get('/index', (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    const dbUser = await User.findAll({
-        where: {
-          email: email
-        },
-      });
+    try {
+        const dbUser = await User.findAll({
+            where: {
+              email: email
+            },
+          });
+          if (!dbUser[0]?.dataValues) {
+            res.render('users/login', locals({ email }, 'Incorrect email or password'))
+            return
+          }
 
-      const { password: dbPassword } = dbUser[0]?.dataValues;
-      const match = await comparePassword(password, dbPassword);
-      console.log('match', match);
+            const { password: dbPassword } = dbUser[0]?.dataValues;
+            const match = await comparePassword(password, dbPassword);
+            console.log('match', match);
 
-      if (match) {
-            //TODO :: session storage
-        res.redirect('/users/index')
-        return
-      }
-
-    res.send('handle login')
+            if (match) {
+                    console.log(req.sessionID);
+                    req.session.authorised = true;
+                    req.session.user = dbUser[0]?.dataValues;
+                    console.log(dbUser[0]?.dataValues);
+                res.redirect('/users/index')
+                return
+            } else {
+                res.render('users/login', locals({ email }, 'Forgot password?'))
+                return
+            }
+    } catch (error) {
+        res.render('users/login', locals({ email }, error))
+    }
+      
 })
 
 // cannot access the body, need to use middleware express.urlencoded
@@ -76,15 +86,13 @@ router.post('/new', async (req, res) => {
     try {
         const newUser = await User.create(payload)
         console.log(newUser.toJSON()); // This is good!
-        res.status(201).render('users/login', { message: 'User created successfully, Please log in.' });
+        res.status(201).render('users/login', locals({}, 'User created successfully, Please log in.'));
         //console.log(JSON.stringify(newUser, null, 4)); // This is also good!
         // res.send('user is added')
     } catch (error) {
-        console.error('Unable to CREATE USER:', error);
-        res.status(500).render('users/new', { 
-            message: 'Failed to create user, Try again.',
-            data: payload
-        });
+        console.error('Unable to CREATE USER:', error?.errors[0]?.message);
+        const errMessage = error?.errors[0]?.message || 'Failed to create user, Try again.';
+        res.status(500).render('users/new', locals(payload, errMessage));
     }
     
     // res.send('testing connection on validate')
@@ -108,10 +116,5 @@ router.param('id', (req, res, next, id) => {
     req.user = users[id]
     next()
 })
-
-function logger(req, res, next) {
-    console.log(req.originalUrl)
-    next()
-}
 
 module.exports = router
