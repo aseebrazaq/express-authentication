@@ -1,15 +1,24 @@
 const express = require('express')
-const router =  express.Router()
+const router = express.Router()
 
 const { isAuthorised } = require('../middleware/auth')
 const { locals } = require('../utils/format')
 
 router.get('/index', isAuthorised, (req, res) => {
-    res.render('account/index', req.session?.user)
+    const payload = {
+        ...req.session?.user,
+        authorised: req.session?.authorised,
+    }
+    console.log('ppp', payload)
+    res.render('account/index', locals(payload))
 })
 
 router.get('/list', isAuthorised, (req, res) => {
-    res.render('account/list', req.session?.user)
+    const payload = {
+        ...req.session?.user,
+        authorised: req.session?.authorised,
+    }
+    res.render('account/list', locals(payload))
 })
 
 router.get('/logout', isAuthorised, (req, res) => {

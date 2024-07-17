@@ -3,27 +3,30 @@ const session = require('express-session')
 const ejs = require('ejs')
 const userRouter = require('./routes/users')
 const accountRouter = require('./routes/account')
+const path = require('path')
 
 const { sequelize, testConnection } = require('./lib/db')
 
 const app = express()
 
 app.set('view engine', 'ejs')
+app.use(express.static(path.join(__dirname, 'public')))
 // required for forms
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 // for JSON request
 app.use(express.json())
 // middleware for sessions
 //sid.signature
-app.use(session({
-    secret: 'anytexthere',
-    cookie: {
-        sameSite: 'strict',
-        maxAge: 30000
-    },
-    saveUninitialized: false
-}))
-app.use(express.static(__dirname + '/public'));
+app.use(
+    session({
+        secret: 'anytexthere',
+        cookie: {
+            sameSite: 'strict',
+            maxAge: 30000,
+        },
+        saveUninitialized: false,
+    })
+)
 
 // STATIC example (/test/tt.html) navigate all pages in directory
 // app.use(express.static("public"))
@@ -40,14 +43,14 @@ app.get('/', (req, res) => {
     // res.status(200).json({message: 'error'})
     // res.download('server.js')
     // res.json({message: 'error'})
-    res.render('index', { text: 'world'})
+    res.render('index', { text: 'world' })
 })
 
 // link route to path
 app.use('/users', userRouter)
 app.use('/account', accountRouter)
 
-sequelize.sync().then(()=>{
+sequelize.sync().then(() => {
     testConnection()
     console.log('db is ready')
     app.listen(3000)

@@ -1,29 +1,37 @@
 <%- include('../partials/header.ejs') %>
-  <body>
-	<!-- <script src="index.js"></script> -->
-   REGISTER
-   <h1><%= locals.message %></h1>
+  <main class="form-signin w-100 m-auto register">
+    <% if (locals.message) { %>
+      <div class="alert alert-primary" role="alert">
+        <%= locals.message %>
+      </div>
+    <% } %>
+   <h1 class="h3 mb-3 fw-normal">CREATE AN ACCOUNT</h1>
    <form action="/users/register" method="POST">
-        <label>First name
-            <input type="text" name="firstName" value="<%= locals.data?.firstName %>" />
-        </label>
-        <br/>
-        <label>Last name
-            <input type="text" name="lastName" value="<%= locals.data?.lastName %>" />
-        </label>
-        <br/>
-        <label>Username
-          <input type="text" name="username" value="<%= locals.data?.username %>" />
-        </label>
-        <br/>
-        <label>Email
-          <input type="text" name="email" value="<%= locals.data?.email %>" required />
-        </label>
-        <br/>
-        <label>Password
-            <input type="password" name="password" value="" required/>
-        </label>
-        <button type="submit">Submit</button>
+    <div class="row">
+      <div class="col-6">
+        <label for="firstname" class="form-label">First Name</label>
+        <input type="text" class="form-control" placeholder="John" aria-label="First name" name="firstName" value="<%= locals.data?.firstName %>">
+      </div>
+      <div class="col-6">
+        <label for="lastname" class="form-label">Last Name</label>
+        <input type="text" class="form-control" placeholder="Doe" aria-label="Last name" name="lastName" value="<%= locals.data?.lastName %>">
+      </div>
+      <div class="col-12">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" placeholder="john.doe" aria-label="username" name="username" value="<%= locals.data?.username %>">
+      </div>
+      <div class="col-12">
+        <label for="email" class="form-label">Email</label>
+        <input type="text" class="form-control" placeholder="john@gmail.com" required aria-label="email" name="email" value="<%= locals.data?.email %>">
+      </div>
+      <div class="col-12">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" placeholder="**********" required aria-label="password" name="password">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Register</button>
+      </div>
+    </div>
     </form>
-  </body>
+    </main>
 <%- include('../partials/footer.ejs') %>

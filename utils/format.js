@@ -3,7 +3,7 @@ const sessionData = {
     firstName: '',
     lastName: '',
     email: '',
-    username: ''
+    username: '',
 }
 
 // locals for the res.render() passing data to views
@@ -12,11 +12,11 @@ const locals = (payload, message = '') => {
         message: message,
         data: {
             ...sessionData,
-            ...payload
-        }
+            ...payload,
+        },
     }
 }
 
 module.exports = {
-    locals
+    locals,
 }
