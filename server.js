@@ -11,7 +11,7 @@ const app = express()
 
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, 'public')))
-// required for forms.
+// required for forms
 app.use(express.urlencoded({ extended: true }))
 // for JSON request
 app.use(express.json())
